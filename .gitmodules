@@ -1,0 +1,6 @@
+[submodule "local-runner-en"]
+	path = local-runner-en
+	url = https://github.com/Russian-AI-Cup-2016/local-runner-en.git
+[submodule "python3-cgdk"]
+	path = python3-cgdk
+	url = https://github.com/Russian-AI-Cup-2016/python3-cgdk.git
