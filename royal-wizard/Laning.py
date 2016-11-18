@@ -1,29 +1,24 @@
-from model.ActionType import ActionType
-from model.Game import Game
-from model.Move import Move
-from model.Wizard import Wizard
-from model.World import World
 from model.LaneType import LaneType
-from model.Message import Message
-from model.Faction import Faction
+from model.ActionType import ActionType
 
 from Common import (State,
                     StateMachine)
 
-from Helper import (get_nearest_visiable_enemy,)
+from Helper import (get_nearest_visible_enemy,)
+
 
 class StateLaning(State):
-    def __init__(self):
+    def __init__(self, lane=LaneType.TOP):
         super(StateLaning, self).__init__()
-        pass
+        self.current_lane = lane
 
-    def run(self, input):
+    def run(self, input_dict):
         print("StateLaning")
-        me = input["me"]
-        world = input["world"]
+        me = input_dict["me"]
+        world = input_dict["world"]
         minions = world.minions
         wizards = world.wizards
-        nearest_enemy = get_nearest_visiable_enemy(me, minions, wizards)
+        nearest_enemy = get_nearest_visible_enemy(me, minions, wizards)
         # TODO: the right way to lancing
         self.forward_speed = 0
         self.action = ActionType.MAGIC_MISSILE
@@ -32,12 +27,12 @@ class StateLaning(State):
         else:
             self.turn_angle = 0
 
-    def next(self, input):
-        me = input["me"]
-        world = input["world"]
+    def next(self, input_dict):
+        me = input_dict["me"]
+        world = input_dict["world"]
         minions = world.minions
         wizards = world.wizards
-        nearest_enemy = get_nearest_visiable_enemy(me, minions, wizards)
+        nearest_enemy = get_nearest_visible_enemy(me, minions, wizards)
         # TODO: a better check for retreat
         if nearest_enemy is None:
             return StateMachine.GoToLane

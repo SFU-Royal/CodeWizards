@@ -1,13 +1,8 @@
-from model.ActionType import ActionType
 from model.Game import Game
 from model.Move import Move
 from model.Wizard import Wizard
 from model.World import World
-from model.LaneType import LaneType
-from model.Message import Message
-from model.Faction import Faction
 
-import random
 from enum import Enum
 
 from Idle import StateIdle
@@ -20,13 +15,14 @@ from Dead import StateDead
 
 from Common import StateMachine
 
+
 class WizardState(Enum):
     Idle = 0
     GoToLane = 1
     Laning = 2
     Retreat = 3
     SwitchLane = 4
-    Feed = 5 # LOL
+    Feed = 5
     Dead = 6
 
 StateMachine.Idle = StateIdle()
@@ -39,7 +35,8 @@ StateMachine.Dead = StateDead()
 
 state_machine = StateMachine(initial_state=StateMachine.GoToLane)
 
-class MyStrategy:
+
+class MyStrategy(object):
     def move(self, me: Wizard, world: World, game: Game, move: Move):
         # Every tick, update state first
         state_machine.update_state(me, world, game)

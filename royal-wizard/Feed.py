@@ -1,23 +1,15 @@
-from model.ActionType import ActionType
-from model.Game import Game
-from model.Move import Move
-from model.Wizard import Wizard
-from model.World import World
-from model.LaneType import LaneType
-from model.Message import Message
-from model.Faction import Faction
-
 from Common import (State,
                     StateMachine)
+
 
 class StateFeed(State):
     def __init__(self):
         super(StateFeed, self).__init__()
         pass
 
-    def run(self, input):
+    def run(self, input_dict):
         print("StateFeed")
         pass
 
-    def next(self, input):
+    def next(self, input_dict):
         return StateMachine.Feed

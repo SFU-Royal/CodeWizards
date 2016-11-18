@@ -3,3 +3,4 @@
 *.pyc
 local-runner-en/
 python3-cgdk/
+.idea/

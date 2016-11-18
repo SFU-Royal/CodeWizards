@@ -1,10 +1,13 @@
-def get_nearest_visiable_enemy(me, minions, wizards, include_neutral=False):
+from model.Faction import Faction
+
+
+def get_nearest_visible_enemy(me, minions, wizards, include_neutral=False):
     nearest_enemy = None
     shortest_dist = 100000
 
     enemy_faction = [1 - me.faction]
     if include_neutral:
-        enemy_faction.append[Faction.NEUTRAL]
+        enemy_faction.append(Faction.NEUTRAL)
 
     for minion in minions:
         if minion.faction in enemy_faction:
