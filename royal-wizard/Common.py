@@ -3,7 +3,11 @@ from model.Game import Game
 from model.Wizard import Wizard
 from model.World import World
 from model.LaneType import LaneType
+from model.Faction import Faction
 
+from Helper import (get_distance,
+                    get_nearest_item,
+                    shortest_path)
 
 class StateMachine(object):
     def __init__(self, initial_state):
@@ -39,29 +43,44 @@ class KeyPoint(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.edges = []
 
 
-class LaneKeyPoints(object):
+class Edge(object):
+    def __init__(self, distance, to):
+        self.distance = distance
+        self.to = to
+
+
+class WorldKeypoints(object):
     def __init__(self):
-        self.keypoints = [[], [], []]
+        self.keypoints = []
+        self.lane_keypoints = [[[] * 2] * 3]
+        self.lane_keypoints[LaneType.TOP][Faction.ACADEMY] = KeyPoint(3400, 200)
 
-    def update_keypoints(self, lane, keypoints):
-        self.keypoints[lane] = keypoints
+    def add_keypoint(self, x, y):
+        self.keypoints.append(KeyPoint(x, y))
 
-    def get_lane_keypoints(self, lane=LaneType.TOP):
-        return self.keypoints[lane]
+    # link keypoints with index i and j
+    def link(self, i, j):
+        dist = get_distance(self.keypoints[i], self.keypoints[j])
+        self.keypoints[i].edges.append(Edge(dist, j))
+        self.keypoints[j].edges.append(Edge(dist, i))
 
+    def get_lane_keypoint(self, lane=LaneType.TOP, faction=Faction.ACADEMY):
+        return self.lane_keypoints[lane][faction]
 
-top_keypoints = []
+    # return list of keypoints for shortest route from a to b
+    def get_route(self, point_a, point_b):
+        _, start, _ = get_nearest_item(point_a, self.keypoints)
+        _, end, _ = get_nearest_item(point_b, self.keypoints)
+        return shortest_path(self.keypoints, start, end)
+
+# init keypoints of game world
+world_keypoints = WorldKeypoints()
 for y in range(3400, 200, -400):
-    top_keypoints.append(KeyPoint(220, y))
+    world_keypoints.add_keypoint(220, y)
 for x in range(600, 3400, 400):
-    top_keypoints.append(KeyPoint(x, 200))
-
-mid_keypoints = []
-bot_keypoints = []
-
-lane_keypoints = LaneKeyPoints()
-lane_keypoints.update_keypoints(lane=LaneType.TOP, keypoints=top_keypoints)
-lane_keypoints.update_keypoints(lane=LaneType.MIDDLE, keypoints=mid_keypoints)
-lane_keypoints.update_keypoints(lane=LaneType.BOTTOM, keypoints=bot_keypoints)
+    world_keypoints.add_keypoint(x, 200)
+for i in range(len(world_keypoints.keypoints)-1):
+    world_keypoints.link(i, i+1)
