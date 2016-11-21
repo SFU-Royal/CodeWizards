@@ -6,7 +6,7 @@ from Common import (State,
 
 from Helper import (get_nearest_visible_enemy,)
 
-PATH_FINDING_EPS = 10.0
+PATH_FINDING_EPS = 5.0
 
 
 class StateGoToLane(State):
@@ -17,11 +17,13 @@ class StateGoToLane(State):
         self.current_index = 0
 
     def run(self, input_dict):
-        print("StateGoToLane")
+        # print("StateGoToLane")
         me = input_dict["me"]
         game = input_dict["game"]
         if len(self.keypoints) == 0:
             self.keypoints = world_keypoints.get_route(me, world_keypoints.get_lane_keypoint(self.dest_lane))
+            lane_to_enemy_base = world_keypoints.get_route(world_keypoints.get_lane_keypoint(self.dest_lane), world_keypoints.get_base(1-me.faction))
+            self.keypoints.extend(lane_to_enemy_base)
 
         keypoint = self.keypoints[self.current_index]
         if me.get_distance_to(keypoint.x, keypoint.y) < PATH_FINDING_EPS:

@@ -1,5 +1,4 @@
 import heapq
-import sys
 from math import *
 
 from model.Faction import Faction
@@ -34,13 +33,14 @@ def get_nearest_item(point, item_list):
 
 def shortest_path(graph, start, end):
     distances = {}
-    previous = {} 
+    previous = {}
+    max_int = 100000000000
 
     for vertex in range(len(graph)):
         if vertex == start:
             distances[vertex] = 0
         else:
-            distances[vertex] = sys.maxsize
+            distances[vertex] = max_int
         previous[vertex] = None
     
     while len(distances):
@@ -48,12 +48,13 @@ def shortest_path(graph, start, end):
         smallest = [key for key in distances if distances[key] == min_value][0]
         if smallest == end:
             path = []
-            while previous[smallest]:
+            while previous[smallest] is not None:
                 path.append(graph[smallest])
                 smallest = previous[smallest]
+            path.append(graph[smallest])
             path.reverse()
             return path
-        if distances[smallest] == sys.maxsize:
+        if distances[smallest] == max_int:
             break
         
         for edge in graph[smallest].edges:
