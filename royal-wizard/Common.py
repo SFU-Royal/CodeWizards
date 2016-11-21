@@ -55,8 +55,10 @@ class Edge(object):
 class WorldKeypoints(object):
     def __init__(self):
         self.keypoints = []
-        self.lane_keypoints = [[[] * 2] * 3]
-        self.lane_keypoints[LaneType.TOP][Faction.ACADEMY] = KeyPoint(3400, 200)
+        self.lane_keypoints = [0, 0, 0]
+        self.lane_keypoints[LaneType.TOP] = KeyPoint(200, 200)
+        self.lane_keypoints[LaneType.MIDDLE] = KeyPoint(2000, 2000)
+        self.lane_keypoints[LaneType.BOTTOM] = KeyPoint(3800, 3800)
 
     def add_keypoint(self, x, y):
         self.keypoints.append(KeyPoint(x, y))
@@ -67,8 +69,8 @@ class WorldKeypoints(object):
         self.keypoints[i].edges.append(Edge(dist, j))
         self.keypoints[j].edges.append(Edge(dist, i))
 
-    def get_lane_keypoint(self, lane=LaneType.TOP, faction=Faction.ACADEMY):
-        return self.lane_keypoints[lane][faction]
+    def get_lane_keypoint(self, lane=LaneType.TOP):
+        return self.lane_keypoints[lane]
 
     # return list of keypoints for shortest route from a to b
     def get_route(self, point_a, point_b):
@@ -78,9 +80,47 @@ class WorldKeypoints(object):
 
 # init keypoints of game world
 world_keypoints = WorldKeypoints()
-for y in range(3400, 200, -400):
-    world_keypoints.add_keypoint(220, y)
-for x in range(600, 3400, 400):
+
+# top lane
+top_start = 0
+for y in range(3400, 200, -100):
+    world_keypoints.add_keypoint(200, y)
+for x in range(300, 3400, 100):
     world_keypoints.add_keypoint(x, 200)
-for i in range(len(world_keypoints.keypoints)-1):
+top_end = len(world_keypoints.keypoints)-1
+for i in range(top_start, top_end-1):
     world_keypoints.link(i, i+1)
+
+# mid lane
+mid_start = len(world_keypoints.keypoints)
+for i in range(3400, 500, -70):
+    world_keypoints.add_keypoint(i, 4000 - i)
+mid_end = len(world_keypoints.keypoints)-1
+for i in range(mid_start, mid_end-1):
+    world_keypoints.link(i, i+1)
+
+# bottom lane
+bottom_start = len(world_keypoints.keypoints)
+for x in range(600, 3400, 100):
+    world_keypoints.add_keypoint(x, 3800)
+for y in range(3300, 600, -100):
+    world_keypoints.add_keypoint(3800, y)
+bottom_end = len(world_keypoints.keypoints)-1
+for i in range(bottom_start, bottom_end-1):
+    world_keypoints.link(i, i+1)
+
+
+world_keypoints.link(top_start, mid_start)
+world_keypoints.link(mid_start, bottom_start)
+world_keypoints.link(top_end, mid_end)
+world_keypoints.link(mid_end, bottom_end)
+
+f1_base = len(world_keypoints.keypoints)
+world_keypoints.add_keypoint(200, 3800)
+world_keypoints.link(f1_base, top_start)
+world_keypoints.link(f1_base, bottom_start)
+
+f2_base = len(world_keypoints.keypoints)
+world_keypoints.add_keypoint(3800, 200)
+world_keypoints.link(f2_base, top_end)
+world_keypoints.link(f2_base, bottom_end)

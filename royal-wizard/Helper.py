@@ -4,13 +4,14 @@ from math import *
 
 from model.Faction import Faction
 
-def get_nearest_visible_enemy(me, minions, wizards, include_neutral=False):
+def get_nearest_visible_enemy(me, minions, wizards, buildings=[], include_neutral=False):
     enemy_faction = [1 - me.faction]
     if include_neutral:
         enemy_faction.append(Faction.NEUTRAL)
 
     enemies = [minion for minion in minions if minion.faction in enemy_faction]
     enemies.extend([wizard for wizard in wizards if wizard.faction in enemy_faction])
+    enemies.extend([building for building in buildings if building.faction in enemy_faction])
 
     nearest_enemy, _, _ = get_nearest_item(me, enemies)
     return nearest_enemy

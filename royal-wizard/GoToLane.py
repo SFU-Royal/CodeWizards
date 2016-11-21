@@ -10,7 +10,7 @@ PATH_FINDING_EPS = 10.0
 
 
 class StateGoToLane(State):
-    def __init__(self, lane=LaneType.TOP):
+    def __init__(self, lane=LaneType.MIDDLE):
         super(StateGoToLane, self).__init__()
         self.dest_lane = lane
         self.keypoints = []
@@ -21,7 +21,7 @@ class StateGoToLane(State):
         me = input_dict["me"]
         game = input_dict["game"]
         if len(self.keypoints) == 0:
-            self.keypoints = world_keypoints.get_route(me, world_keypoints.get_lane_keypoint(self.dest_lane, me.faction))
+            self.keypoints = world_keypoints.get_route(me, world_keypoints.get_lane_keypoint(self.dest_lane))
 
         keypoint = self.keypoints[self.current_index]
         if me.get_distance_to(keypoint.x, keypoint.y) < PATH_FINDING_EPS:
@@ -36,7 +36,8 @@ class StateGoToLane(State):
         world = input_dict["world"]
         minions = world.minions
         wizards = world.wizards
-        nearest_enemy = get_nearest_visible_enemy(me, minions, wizards)
+        buildings = world.buildings
+        nearest_enemy = get_nearest_visible_enemy(me, minions, wizards, buildings)
         # TODO: switch to laning with better checking function
         if nearest_enemy is not None:
             return StateMachine.Laning
